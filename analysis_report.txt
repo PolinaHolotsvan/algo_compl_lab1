@@ -1,0 +1,50 @@
+Аналіз часу виконання:
+def polynomial_hash(s: str, p=131, m=(2 ** 31) - 1):  --> O(n)
+    hash_value = 0  --> 1
+    p_power = 1  --> 1
+    for char in s:  --> len(s), нехай n
+        hash_value = (hash_value + ord(char) * p_power) % m  --> 1
+        p_power = (p_power * p) % m  --> 1
+    return hash_value
+
+
+
+def is_palindrome(s: str) -> bool:  --> O(1)
+    pure_s = s.replace(" ", "")  --> 1
+    return pure_s == pure_s[::-1]  --> 1
+
+
+
+def process_operations_with_hash(operations):  --> k*n --> O(n)
+    string_hashes = {}  --> 1
+    palindromes = {}  --> 1
+    start_time = time.perf_counter()  --> 1
+
+    for i in range(10 ** 6):  --> 10 ** 6
+        operation = operations[i]  --> 1
+        op, string = operation[0], operation[1:].strip()  --> 1, 1
+        string_hash = polynomial_hash(string)  --> O(n)
+
+        if op == '+':
+            string_hashes[string_hash] = string  --> 1
+            if is_palindrome(string):
+                palindromes[string_hash] = string  --> 1
+
+        elif op == '-':
+            if string_hash in string_hashes:
+                del string_hashes[string_hash]  --> 1
+                if string_hash in palindromes:
+                    del palindromes[string_hash]  --> 1
+
+        elif op == '?':
+            print("yes" if string_hash in string_hashes else "no")  --> 1
+
+        elif op == '#':
+            break
+    end_time = time.perf_counter()  --> 1
+    print("Computation time: ", end_time - start_time)  --> 1
+
+    return palindromes
+
+Ймовірність колізії при обчисленні хеш-функції:
+15^2/(2*(2^31-1)) = 5.23868948e-8
